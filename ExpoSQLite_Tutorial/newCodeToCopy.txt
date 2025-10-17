@@ -18,6 +18,7 @@
  * @param quantity - The updated quantity for the item
  * @returns Promise that resolves when the update operation completes
  */
+ 
 export const updateItem = async (
   db: SQLiteDatabase,
   id: number,
