@@ -9,7 +9,7 @@ import {
   View,
   Alert,
 } from "react-native";
-import { fetchItems, insertItem, deleteItem, updateItem, type Item } from "../data/db";
+import { fetchItems, insertItem, deleteItem, sortQTYHighLow, updateItem, type Item } from "../data/db";
 import ItemRow from "./components/ItemRow";
 
 export default function App() {
@@ -77,6 +77,150 @@ export default function App() {
     try {
       const value = await fetchItems(db);
       setItems(value);
+    } catch (err) {
+      console.log("Failed to fetch items", err);
+    }
+  };
+
+  /**
+   * 
+   * Sort Items:
+   * High - Low
+   * 
+   */
+
+  const sortItemsHL = async () => {
+    try {
+      const value = await fetchItems(db);
+      console.log(value)
+      for (let i = 0; i < value.length; i++) {
+        console.log(value[i].quantity)
+        for (let j = value.length - 1; j > i; j--) {
+          if (value[i].quantity < value[j].quantity) {
+            let temp = value[i].quantity
+            value[i].quantity = value[j].quantity
+            value[j].quantity = temp
+
+            let temp2 = value[i].name
+            value[i].name = value[j].name
+            value[j].name = temp2
+
+            let temp3 = value[i].id
+            value[i].id = value[j].id
+            value[j].id = temp3
+          }
+        }
+      }
+      setItems(value);
+      console.log(value)
+    } catch (err) {
+      console.log("Failed to fetch items", err);
+    }
+  };
+
+  /**
+   * 
+   * Sort Items:
+   * Low - High
+   * 
+   */
+
+  const sortItemsLH = async () => {
+    try {
+      const value = await fetchItems(db);
+      console.log(value)
+      for (let i = 0; i < value.length; i++) {
+        console.log(value[i].quantity)
+        for (let j = value.length - 1; j > i; j--) {
+          if (value[i].quantity > value[j].quantity) {
+            let temp = value[i].quantity
+            value[i].quantity = value[j].quantity
+            value[j].quantity = temp
+
+            let temp2 = value[i].name
+            value[i].name = value[j].name
+            value[j].name = temp2
+
+            let temp3 = value[i].id
+            value[i].id = value[j].id
+            value[j].id = temp3
+          }
+        }
+      }
+      setItems(value);
+      console.log(value)
+    } catch (err) {
+      console.log("Failed to fetch items", err);
+    }
+  };
+
+  /**
+   * 
+   * Sort Items:
+   * A - Z
+   * 
+   */
+
+  const sortItemsAZ = async () => {
+    try {
+      const value = await fetchItems(db);
+      console.log(value)
+      for (let i = 0; i < value.length; i++) {
+        console.log(value[i].name.charCodeAt(0))
+        for (let j = value.length - 1; j > i; j--) {
+          if (value[i].name.charCodeAt(0) > value[j].name.charCodeAt(0)) {
+            let temp = value[i].quantity
+            value[i].quantity = value[j].quantity
+            value[j].quantity = temp
+
+            let temp2 = value[i].name
+            value[i].name = value[j].name
+            value[j].name = temp2
+
+            let temp3 = value[i].id
+            value[i].id = value[j].id
+            value[j].id = temp3
+          }
+        }
+      }
+      setItems(value);
+      console.log(value)
+    } catch (err) {
+      console.log("Failed to fetch items", err);
+    }
+  };
+
+  /**
+   * 
+   * Sort Items:
+   * A - Z
+   * 
+   */
+
+  const sortItemsZA = async () => {
+    try {
+      const value = await fetchItems(db);
+      console.log(value)
+      for (let i = 0; i < value.length; i++) {
+        console.log(value[i].name.charCodeAt(0))
+        for (let j = value.length - 1; j > i; j--) {
+          if (value[i].name.charCodeAt(0) < value[j].name.charCodeAt(0)) {
+            let temp = value[i].quantity
+            value[i].quantity = value[j].quantity
+            value[j].quantity = temp
+
+            let temp2 = value[i].name
+            value[i].name = value[j].name
+            value[j].name = temp2
+
+            let temp3 = value[i].id
+            value[i].id = value[j].id
+            value[j].id = temp3
+          }
+        }
+      }
+      setItems(value);
+      console.log(value)
     } catch (err) {
       console.log("Failed to fetch items", err);
     }
@@ -219,6 +363,30 @@ export default function App() {
     ]);
   };
 
+  const validateSortQTYHL = async () => {
+    if (!name.trim()) return;
+    const parsedQuantity = parseInt(quantity, 10);
+    if (Number.isNaN(parsedQuantity)) return;
+
+    try {
+      if (editingId === null) {
+        await sortQTYHighLow(db, 0);
+        console.log("test2");
+      } else {
+        await sortQTYHighLow(db, editingId);
+        console.log("test3");
+      }
+      await loadItems();
+      setName("");
+      setQuantity("");
+      setEditingId(null);
+      console.log("test4");
+    } catch (err) {
+      console.log("Failed to sort items", err);
+    }
+  };
+
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>SQLite Example</Text>
@@ -251,6 +419,28 @@ export default function App() {
         title={editingId === null ? "Save Item" : "Update Item"}
         onPress={saveOrUpdate}
       />
+
+
+      <Button
+        title={"sort qty (High-Low)"}
+        onPress={sortItemsHL}
+      />
+
+      <Button
+        title={"sort qty (Low - High)"}
+        onPress={sortItemsLH}
+      />
+
+      <Button
+        title={"sort qty (A - Z)"}
+        onPress={sortItemsAZ}
+      />
+
+      <Button
+        title={"sort qty (Z - A)"}
+        onPress={sortItemsZA}
+      />
+      
       <FlatList
         style={styles.list}
         data={items}

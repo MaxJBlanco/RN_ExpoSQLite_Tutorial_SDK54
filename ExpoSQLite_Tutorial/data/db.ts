@@ -37,9 +37,11 @@ export interface Item {
  * @returns Promise that resolves when the table initialization completes
  */
 export const initDb = async (db: SQLiteDatabase): Promise<void> => {
+  console.log("test0")
   await db.execAsync(
     "CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY NOT NULL, name TEXT NOT NULL, quantity INTEGER NOT NULL);"
   );
+  
 };
 
 /**
@@ -64,7 +66,12 @@ export const insertItem = async (
   name: string,
   quantity: number
 ): Promise<void> => {
-  await db.runAsync("INSERT INTO items (name, quantity) VALUES (?, ?);", [name, quantity]);
+  await db.runAsync(`
+    
+    INSERT INTO items (name, quantity) VALUES (?, ?);
+
+    `, [name, quantity]);
+  console.log("testV1")
 };
 
 /**
@@ -129,4 +136,22 @@ export const deleteItem = async (db: SQLiteDatabase, id: number): Promise<void> 
   await db.runAsync("DELETE FROM items WHERE id = ?;", [id]);
 };
 
+/**
+   * 
+   * Sorting items in the database by:
+   * 
+   * A - Z
+   * Z - A
+   * qty low - high
+   * qty high - low
+   * 
+   * @param db - The SQLite database instance
+   * @param id - The unique identifier of the item to update
+   * @param name - The updated name for the item
+   * @param quantity - The updated quantity for the item
+   * 
+   */
 
+export const sortQTYHighLow = async (db: SQLiteDatabase, id: number): Promise<void> => {
+  await db.runAsync("SELECT FROM items WHERE id = ?;", [id]);
+};
